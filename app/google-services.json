@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "196501883961",
+    "project_id": "ranksprint-eb5b7",
+    "storage_bucket": "ranksprint-eb5b7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:196501883961:android:13fc0694ae79e96dd211e8",
+        "android_client_info": {
+          "package_name": "com.ranksprint"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdKvJSSwmLg95BX2w5uW3gN-75gzfnK7o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
