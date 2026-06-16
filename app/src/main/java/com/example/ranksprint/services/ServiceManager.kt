@@ -9,6 +9,7 @@ import com.example.quiztech.model.ExamQuestionsResponse
 import com.example.quiztech.model.SubmitExamRequest
 import com.example.quiztech.model.SubmitExamResponse
 import com.example.quiztech.model.FAQsMainResponse
+import com.example.quiztech.model.HomeSubCategoryResponse
 import com.example.quiztech.model.LoginResponse
 import com.example.quiztech.model.MainResponse
 import com.example.quiztech.model.MockListMainRes
@@ -16,6 +17,7 @@ import com.example.quiztech.model.OTPVerifyResponse
 import com.example.quiztech.model.PageResponse
 import com.example.quiztech.model.ResendOTPResponse
 import com.example.quiztech.model.MyExamsResponse
+import com.example.quiztech.model.NotificationResponse
 import com.example.quiztech.model.RegistrationMainRes
 import com.example.quiztech.model.SubCategoryMainRes
 import com.example.quiztech.model.SubscriptionDetailRes
@@ -78,9 +80,9 @@ class ServiceManager {
     }
 
 
-    fun loginUser(cb: Callback<LoginResponse>, email:String){
+    fun loginUser(cb: Callback<LoginResponse>, email:String, device_id:String){
         val apiService = retrofit.create(APIInterface::class.java)
-        val call = apiService.loginUser(email)
+        val call = apiService.loginUser(email, device_id)
         call.enqueue(cb)
     }
 
@@ -117,6 +119,20 @@ class ServiceManager {
     val token= Utils.access_token
         val apiService = retrofit.create(APIInterface::class.java)
         val call = apiService.getSubCategories("Bearer $token",cat_id)
+        call.enqueue(cb,)
+    }
+
+    fun getHomeSubCategories(cb: Callback<HomeSubCategoryResponse>, cat_id: String){
+        val token= Utils.access_token
+        val apiService = retrofit.create(APIInterface::class.java)
+        val call = apiService.getHomeSubCategories("Bearer $token",cat_id)
+        call.enqueue(cb,)
+    }
+
+    fun getMockItemsTestByCategory(cb: Callback<MockListMainRes>,sub_category_id:String){
+        val token= Utils.access_token
+        val apiService = retrofit.create(APIInterface::class.java)
+        val call = apiService.getMockItemsTestByCategory("Bearer $token",sub_category_id)
         call.enqueue(cb,)
     }
 
@@ -289,6 +305,14 @@ class ServiceManager {
         val call = apiService.getProfile("Bearer $token", userId)
         call.enqueue(cb)
     }
+
+    fun getNotifications(cb: Callback<NotificationResponse>, userId: String) {
+        val token = Utils.access_token
+        val apiService = retrofit.create(APIInterface::class.java)
+        val call = apiService.getNotifications("Bearer $token", userId)
+        call.enqueue(cb)
+    }
+
 
     fun File.toImageRequestBody(partName: String): MultipartBody.Part {
         val mimeType = when (this.extension.lowercase()) {

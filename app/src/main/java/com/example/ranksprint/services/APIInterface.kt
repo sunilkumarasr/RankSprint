@@ -11,7 +11,9 @@ import com.example.quiztech.model.LoginResponse
 import com.example.quiztech.model.MainResponse
 import com.example.quiztech.model.MockListMainRes
 import com.example.quiztech.model.ExamQuestionsResponse
+import com.example.quiztech.model.HomeSubCategoryResponse
 import com.example.quiztech.model.MyExamsResponse
+import com.example.quiztech.model.NotificationResponse
 import com.example.quiztech.model.OTPVerifyResponse
 import com.example.quiztech.model.SubmitExamRequest
 import com.example.quiztech.model.SubmitExamResponse
@@ -61,7 +63,8 @@ interface APIInterface {
     @FormUrlEncoded
     @POST(ROOT_URL_SUB + "login")
     fun loginUser(
-        @Field("email") email: String
+        @Field("email") email: String,
+        @Field("device_id") device_id: String
     ): Call<LoginResponse>
 
     @FormUrlEncoded
@@ -97,6 +100,14 @@ interface APIInterface {
         @Field("cat_id") cat_id: String,
     ): Call<SubCategoryMainRes>
 
+    @FormUrlEncoded
+    @POST(ROOT_URL_SUB + "get_subcategories")
+    fun getHomeSubCategories(
+        @Header("Authorization") authHeader: String,
+        @Field("category_id") cat_id: String,
+    ): Call<HomeSubCategoryResponse>
+
+
     @POST(ROOT_URL_SUB + "get_topics")
     fun getTopicBySib(
         @Header("Authorization") authHeader: String,
@@ -125,6 +136,11 @@ interface APIInterface {
                                 @Field("user_id") user_id: String,
                                 ): Call<MockListMainRes>
 
+    @FormUrlEncoded
+    @POST(ROOT_URL_SUB + "get_mock_list_by_subcategory")
+    fun getMockItemsTestByCategory(  @Header("Authorization") authHeader: String,
+                                @Field("sub_category_id") sub_category_id: String,
+    ): Call<MockListMainRes>
 
     @FormUrlEncoded
     @POST(ROOT_URL_SUB + "get_mock_list_by_sub_category")
@@ -294,4 +310,11 @@ interface APIInterface {
         @Header("Authorization") authHeader: String,
         @Field("user_id") userId: String
     ): Call<OTPVerifyResponse>
+
+    @FormUrlEncoded
+    @POST(ROOT_URL_SUB + "get_notifications")
+    fun getNotifications(
+        @Header("Authorization") authHeader: String,
+        @Field("user_id") userId: String
+    ): Call<NotificationResponse>
 }

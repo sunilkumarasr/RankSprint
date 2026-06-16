@@ -198,6 +198,7 @@ data class Category(
     @SerializedName("name") var name: String="",
     @SerializedName("image") var image: String="",
     @SerializedName("has_subcategories") var hasSubcategories:Int= 0,
+    @SerializedName("subcategory_count") var subCategoryCount:Int= 0,
 ): Serializable
 
 data class SubCatResponse(
@@ -351,4 +352,63 @@ data class MyExamItem(
 data class TestSubject(
     @SerializedName("subject_name") var subjectName: String? = null,
     @SerializedName("question_count") var question_count: Int? = null
+)
+
+
+data class NotificationResponse(
+    @SerializedName("status")
+    var status: Int? = null,
+
+    @SerializedName("message")
+    var message: String? = null,
+
+    @SerializedName("notifications")
+    var notifications: ArrayList<NotificationItem> = arrayListOf()
+)
+
+data class NotificationItem(
+    @SerializedName("id")
+    var id: Int? = null,
+
+    @SerializedName("user_id")
+    var userId: Int? = null,
+
+    @SerializedName("title")
+    var title: String? = null,
+
+    @SerializedName("message")
+    var message: String? = null,
+
+    @SerializedName("type")
+    var type: String? = null,
+
+    @SerializedName("reference_id")
+    var referenceId: String? = null,
+
+    @SerializedName("is_read")
+    var isRead: Int? = null,
+
+    @SerializedName("created_at")
+    var createdAt: String? = null
+)
+
+data class HomeSubCategoryResponse(
+
+    @SerializedName("status")
+    var status: Int? = null,
+
+    @SerializedName("message")
+    var message: String? = null,
+
+    @SerializedName("subcategories")
+    var homeSubCategoriesItems: ArrayList<HomeSubcategoriesItem> = arrayListOf()
+)
+
+data class HomeSubcategoriesItem(
+
+    @SerializedName("id")
+    var id: String? = null,
+
+    @SerializedName("name")
+    var name: String? = null
 )

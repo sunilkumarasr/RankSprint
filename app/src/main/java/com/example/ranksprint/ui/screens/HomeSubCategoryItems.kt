@@ -1,61 +1,53 @@
 package com.example.ranksprint.ui.screens
 
 import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
 import com.example.quiztech.model.MockList
-import com.example.ranksprint.ui.viewmodels.CategoryViewModel
-
+import com.example.ranksprint.ui.viewmodels.HomeSubCategoryItemsViewModel
 import com.example.ranksprint.ui.components.BottomNavigationBar
 import androidx.navigation.NavController
 import com.example.ranksprint.common.Utils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoryScreen(
+fun HomeSubCategoryItems(
     navController: NavController,
     categoryId: String,
+    subCategoryItemName: String,
     onNavigateBack: () -> Unit,
     onNavigateToTestInstructions: (String) -> Unit,
-    viewModel: CategoryViewModel = viewModel()
+    viewModel: HomeSubCategoryItemsViewModel = viewModel()
 ) {
     val mockTests by viewModel.mockTests.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
     val context = LocalContext.current
     LaunchedEffect(categoryId) {
+        Log.e("asdf_", "2")
 
         val userId = Utils.getData(context, "user_id", "") as String
 
-        Log.e("categoryId", categoryId)
-        Log.e("user_id", userId)
-
-
-        viewModel.fetchMockTestsByCategory(categoryId,userId)
+        viewModel.fetchMockItemsTestsByCategory(categoryId)
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mock Tests", style = MaterialTheme.typography.titleMedium) },
+                title = { Text(subCategoryItemName, style = MaterialTheme.typography.titleMedium) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -89,7 +81,7 @@ fun CategoryScreen(
                     contentPadding = PaddingValues(vertical = 16.dp)
                 ) {
                     items(mockTests.size) { index ->
-                        CategoryTestListItem(mockTests[index], onNavigateToTestInstructions)
+                        SubCategoryItemsTestListItem(mockTests[index], onNavigateToTestInstructions)
                     }
                 }
             }
@@ -98,7 +90,7 @@ fun CategoryScreen(
 }
 
 @Composable
-fun CategoryTestListItem(mockTest: MockList, onNavigateToTestInstructions: (String) -> Unit) {
+fun SubCategoryItemsTestListItem(mockTest: MockList, onNavigateToTestInstructions: (String) -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -125,9 +117,9 @@ fun CategoryTestListItem(mockTest: MockList, onNavigateToTestInstructions: (Stri
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                CategoryInfoRow("Question Count : ", mockTest.questions ?: "0")
-                CategoryInfoRow("Duration : ", "${mockTest.pDuration ?: "0"} min")
-                CategoryInfoRow("Mark : ", mockTest.marks ?: "0")
+                SubCategoryItemInfoRow("Question Count : ", mockTest.questions ?: "0")
+                SubCategoryItemInfoRow("Duration : ", "${mockTest.pDuration ?: "0"} min")
+                SubCategoryItemInfoRow("Mark : ", mockTest.marks ?: "0")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -145,11 +137,11 @@ fun CategoryTestListItem(mockTest: MockList, onNavigateToTestInstructions: (Stri
 }
 
 @Composable
-fun CategoryInfoRow(label: String, value: String) {
+fun SubCategoryItemInfoRow(label: String, value: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
 
-    ) {
+        ) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelMedium,
@@ -171,7 +163,7 @@ fun CategoryInfoRow(label: String, value: String) {
 }
 
 @Composable
-fun CategoryInstructionRow(label: String, value: String) {
+fun SubCategoryItemInstructionRow(label: String, value: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween

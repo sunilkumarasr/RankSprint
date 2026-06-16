@@ -5,19 +5,47 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.compose.ui.platform.LocalContext
 import com.example.ranksprint.common.Utils
-import com.example.ranksprint.ui.screens.*
-
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import com.example.ranksprint.ui.screens.AboutUsScreen
+import com.example.ranksprint.ui.screens.AllCategoriesScreen
+import com.example.ranksprint.ui.screens.CategoryScreen
+import com.example.ranksprint.ui.screens.ContactUsScreen
+import com.example.ranksprint.ui.screens.EnquiryScreen
+import com.example.ranksprint.ui.screens.FAQScreen
+import com.example.ranksprint.ui.screens.HomeScreen
+import com.example.ranksprint.ui.screens.HomeSubCategoryItems
+import com.example.ranksprint.ui.screens.HomeSubCategoryScreen
+import com.example.ranksprint.ui.screens.MockTestEngineScreen
+import com.example.ranksprint.ui.screens.MyTestsScreen
+import com.example.ranksprint.ui.screens.NotLoggedInScreen
+import com.example.ranksprint.ui.screens.NotificationScreen
+import com.example.ranksprint.ui.screens.OTPScreen
+import com.example.ranksprint.ui.screens.PaymentSuccessScreen
+import com.example.ranksprint.ui.screens.PersonalInfoScreen
+import com.example.ranksprint.ui.screens.PrivacyPolicyScreen
+import com.example.ranksprint.ui.screens.ProfileScreen
+import com.example.ranksprint.ui.screens.RefundPolicyScreen
+import com.example.ranksprint.ui.screens.ScoreScreen
+import com.example.ranksprint.ui.screens.ScorecardScreen
+import com.example.ranksprint.ui.screens.SignInScreen
+import com.example.ranksprint.ui.screens.SignUpScreen
+import com.example.ranksprint.ui.screens.SplashScreen
+import com.example.ranksprint.ui.screens.SubCategoryTestsScreen
+import com.example.ranksprint.ui.screens.SubjectSelectionScreen
+import com.example.ranksprint.ui.screens.SubscriptionPlansScreen
+import com.example.ranksprint.ui.screens.SubscriptionScreen
+import com.example.ranksprint.ui.screens.TermsConditionsScreen
+import com.example.ranksprint.ui.screens.TestInstructionsScreen
 import com.example.ranksprint.ui.viewmodels.SharedViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun RankSprintNavGraph(navController: NavHostController) {
@@ -76,7 +104,7 @@ fun RankSprintNavGraph(navController: NavHostController) {
                     navController.navigate(Screen.CategoryTests.createRoute(categoryId))
                 },
                 onNavigateToTestInstructions = { testId ->
-                    Log.e("testId","testId $testId")
+                    Log.e("testId", "testId $testId")
                     navController.navigate("test_instructions/$testId")
                 },
                 onViewAllCategories = {
@@ -87,12 +115,15 @@ fun RankSprintNavGraph(navController: NavHostController) {
                 }
             )
         }
-        
+
         composable(Screen.Categories.route) {
             AllCategoriesScreen(
                 navController = navController,
                 onNavigateToCategoryTests = { categoryId ->
                     navController.navigate(Screen.CategoryTests.createRoute(categoryId))
+                },
+                onNavigateToHomeSubCategoryTests = { categoryId, categoryName ->
+                    navController.navigate(Screen.HomeSubCategoryTests.createRoute(categoryId, categoryName))
                 }
             )
         }
@@ -102,6 +133,34 @@ fun RankSprintNavGraph(navController: NavHostController) {
             CategoryScreen(
                 navController = navController,
                 categoryId = categoryId,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToTestInstructions = { testId ->
+                    navController.navigate("test_instructions/$testId")
+                }
+            )
+        }
+
+        composable(Screen.HomeSubCategoryTests.route) { backStackEntry ->
+            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
+            val categoryName = backStackEntry.arguments?.getString("categoryName") ?: ""
+            HomeSubCategoryScreen(
+                navController = navController,
+                categoryId = categoryId,
+                categoryName = categoryName,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToTestInstructions = { testId ->
+                    navController.navigate("test_instructions/$testId")
+                }
+            )
+        }
+
+        composable(Screen.HomeSubCategoryItemsTests.route) { backStackEntry ->
+            val categoryId = backStackEntry.arguments?.getString("categoryId") ?: ""
+            val subCategoryItemName = backStackEntry.arguments?.getString("subCategoryItemName") ?: ""
+            HomeSubCategoryItems(
+                navController = navController,
+                categoryId = categoryId,
+                subCategoryItemName = subCategoryItemName,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToTestInstructions = { testId ->
                     navController.navigate("test_instructions/$testId")
@@ -166,7 +225,7 @@ fun RankSprintNavGraph(navController: NavHostController) {
             val correctAnswers = submitResponse?.data?.correctAnswers ?: 0
             val wrongAnswers = submitResponse?.data?.wrongAnswers ?: 0
             val notAttempted = totalQuestions - correctAnswers - wrongAnswers
-            
+
             ScoreScreen(
                 navController = navController,
                 score = submitResponse?.data?.score?.toIntOrNull() ?: 0,
@@ -186,7 +245,7 @@ fun RankSprintNavGraph(navController: NavHostController) {
         composable(Screen.MyTests.route) {
             MyTestsScreen(navController = navController)
         }
-        
+
         composable(Screen.Profile.route) {
             ProfileScreen(
                 navController = navController,
@@ -201,7 +260,7 @@ fun RankSprintNavGraph(navController: NavHostController) {
                 onNavigateToSubscriptions = { navController.navigate(Screen.Subscription.route) },
                 onLogout = {
                     Utils.clearPref(context)
-                    Utils.user_id=""
+                    Utils.user_id = ""
                     Utils.access_token = ""
                     navController.navigate(Screen.SignIn.route) {
                         popUpTo(0) { inclusive = true }
@@ -209,7 +268,7 @@ fun RankSprintNavGraph(navController: NavHostController) {
                 }
             )
         }
-        
+
         composable("personal_info") {
             PersonalInfoScreen(
                 navController = navController,
@@ -227,7 +286,7 @@ fun RankSprintNavGraph(navController: NavHostController) {
                 }
             )
         }
-        
+
         composable("subscription_details/{planId}") { backStackEntry ->
             val planId = backStackEntry.arguments?.getString("planId") ?: ""
             SubscriptionScreen(
@@ -248,7 +307,7 @@ fun RankSprintNavGraph(navController: NavHostController) {
         }
 
         // Overriding SubscriptionScreen logic in NavGraph for now or better, update SubscriptionScreen.kt
-        
+
         composable("payment_success") {
             PaymentSuccessScreen(
                 navController = navController,
@@ -260,11 +319,31 @@ fun RankSprintNavGraph(navController: NavHostController) {
             )
         }
 
-        composable(Screen.AboutUs.route) { AboutUsScreen(navController = navController, onNavigateBack = { navController.popBackStack() }) }
-        composable(Screen.Terms.route) { TermsConditionsScreen(navController = navController, onNavigateBack = { navController.popBackStack() }) }
-        composable(Screen.Privacy.route) { PrivacyPolicyScreen(navController = navController, onNavigateBack = { navController.popBackStack() }) }
-        composable(Screen.Contact.route) { ContactUsScreen(navController = navController, onNavigateBack = { navController.popBackStack() }) }
-        composable(Screen.Refund.route) { RefundPolicyScreen(navController = navController, onNavigateBack = { navController.popBackStack() }) }
+        composable(Screen.AboutUs.route) {
+            AboutUsScreen(
+                navController = navController,
+                onNavigateBack = { navController.popBackStack() })
+        }
+        composable(Screen.Terms.route) {
+            TermsConditionsScreen(
+                navController = navController,
+                onNavigateBack = { navController.popBackStack() })
+        }
+        composable(Screen.Privacy.route) {
+            PrivacyPolicyScreen(
+                navController = navController,
+                onNavigateBack = { navController.popBackStack() })
+        }
+        composable(Screen.Contact.route) {
+            ContactUsScreen(
+                navController = navController,
+                onNavigateBack = { navController.popBackStack() })
+        }
+        composable(Screen.Refund.route) {
+            RefundPolicyScreen(
+                navController = navController,
+                onNavigateBack = { navController.popBackStack() })
+        }
 
         composable(Screen.NotLoggedIn.route) {
             NotLoggedInScreen(
@@ -276,14 +355,14 @@ fun RankSprintNavGraph(navController: NavHostController) {
                 }
             )
         }
-        
+
         composable("faq") {
             FAQScreen(
                 navController = navController,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
-        composable("enquiry") { 
+        composable("enquiry") {
             EnquiryScreen(
                 navController = navController,
                 onNavigateBack = { navController.popBackStack() }

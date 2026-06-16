@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity(), PaymentResultListener {
         enableEdgeToEdge()
         
         // Preload Razorpay
-        Checkout.preload(applicationContext)
+        //Checkout.preload(applicationContext)
 
         // Initialize access_token from SharedPreferences on startup
         Utils.access_token = Utils.getData(this, "access_token", "") as String

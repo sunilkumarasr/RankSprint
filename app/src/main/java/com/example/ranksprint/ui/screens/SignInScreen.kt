@@ -40,13 +40,13 @@ fun SignInScreen(
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
-    var fcmToken by remember { mutableStateOf("") }
+    var device_id by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         FirebaseMessaging.getInstance().token
             .addOnSuccessListener { token ->
-                fcmToken = token
-                Log.e("FCM_TOKEN", fcmToken)
+                device_id = token
+                Log.e("FCM_TOKEN", device_id)
             }
     }
 
@@ -155,7 +155,7 @@ fun SignInScreen(
                         isLoading = false
                         errorMessage = t.message ?: "Network error"
                     }
-                }, email)
+                }, email, device_id)
             },
             modifier = Modifier
                 .fillMaxWidth()
