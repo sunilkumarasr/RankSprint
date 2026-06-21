@@ -6,6 +6,8 @@ import com.example.quiztech.model.BannerList
 import com.example.quiztech.model.BannerResponse
 import com.example.quiztech.model.Category
 import com.example.quiztech.model.CategoryResponse
+import com.example.quiztech.model.LeaderBoardItem
+import com.example.quiztech.model.LeaderBoardResponse
 import com.example.quiztech.model.MockList
 import com.example.quiztech.model.MockListMainRes
 import com.example.quiztech.services.ServiceManager
@@ -27,6 +29,11 @@ class HomeViewModel : ViewModel() {
     private val _popularMockTests = MutableStateFlow<List<MockList>>(emptyList())
     val popularMockTests: StateFlow<List<MockList>> = _popularMockTests
 
+    private val _LeaderBoard =
+        MutableStateFlow<List<LeaderBoardItem>>(emptyList())
+    val LeaderBoard: StateFlow<List<LeaderBoardItem>> =
+        _LeaderBoard
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
@@ -36,21 +43,21 @@ class HomeViewModel : ViewModel() {
     private var categoriesLoaded = false
     private var bannersLoaded = false
     private var mockTestsLoaded = false
+    private var leaderBoardLoaded = false
 
-    init {
-        fetchData()
-    }
 
-    fun fetchData() {
+    fun fetchData(userId: String) {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
             categoriesLoaded = false
             bannersLoaded = false
             mockTestsLoaded = false
+            leaderBoardLoaded = false
             fetchCategories()
             fetchBanners()
             fetchPopularMockTests()
+            fetchLeaderBoard(userId)
         }
     }
 
@@ -114,8 +121,60 @@ class HomeViewModel : ViewModel() {
         })
     }
 
+    private fun fetchLeaderBoard(userId: String) {
+
+        ServiceManager.getDataManager().getLeaderBoard(
+            object : Callback<LeaderBoardResponse> {
+
+                override fun onResponse(
+                    call: Call<LeaderBoardResponse>,
+                    response: Response<LeaderBoardResponse>
+                ) {
+
+                    leaderBoardLoaded = true
+
+                    if (response.isSuccessful && response.body() != null) {
+
+                        val body = response.body()!!
+
+                        if (body.status == 1) {
+
+                            _LeaderBoard.value = body.leaderboard ?: emptyList()
+
+                        } else {
+
+                            _LeaderBoard.value = emptyList()
+
+                            _error.value =
+                                body.message ?: "No leaderboard found"
+                        }
+
+                    } else {
+
+                        _error.value =
+                            "Failed to fetch leaderboard: ${response.message()}"
+                    }
+
+                    checkLoadingFinished()
+                }
+
+                override fun onFailure(
+                    call: Call<LeaderBoardResponse>,
+                    t: Throwable
+                ) {
+                    leaderBoardLoaded = true
+                    _error.value =
+                        "Error fetching leaderboard: ${t.message}"
+                    checkLoadingFinished()
+                }
+            },
+            userId
+        )
+    }
+
+
     private fun checkLoadingFinished() {
-        if (categoriesLoaded && bannersLoaded && mockTestsLoaded) {
+        if (categoriesLoaded && bannersLoaded && mockTestsLoaded && leaderBoardLoaded) {
             _isLoading.value = false
         }
     }

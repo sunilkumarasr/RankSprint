@@ -38,6 +38,8 @@ fun ProfileScreen(
     navController: NavController,
     sharedViewModel: SharedViewModel,
     onNavigateToEditProfile: () -> Unit,
+    onNavigateToMyRanksScreen: () -> Unit,
+    onNavigateToMyTicketListScreen: () -> Unit,
     onNavigateToAboutUs: () -> Unit,
     onNavigateToTerms: () -> Unit,
     onNavigateToPrivacy: () -> Unit,
@@ -147,6 +149,12 @@ fun ProfileScreen(
 
                 // Menu Items
                 Column(modifier = Modifier.fillMaxWidth()) {
+                    ProfileMenuItem(Icons.Outlined.Leaderboard, "My Ranks", onClick = onNavigateToMyRanksScreen)
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp)
+
+                    ProfileMenuItem(Icons.Outlined.ConfirmationNumber, "Tickets", onClick = onNavigateToMyTicketListScreen)
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp)
+
                     ProfileMenuItem(Icons.Outlined.Info, "About US", onClick = onNavigateToAboutUs)
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), thickness = 0.5.dp)
                     

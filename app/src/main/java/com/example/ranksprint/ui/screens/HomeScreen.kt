@@ -22,6 +22,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -52,12 +54,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.quiztech.model.BannerList
 import com.example.quiztech.model.Category
+import com.example.quiztech.model.LeaderBoardItem
 import com.example.quiztech.model.MockList
 import com.example.ranksprint.R
 import com.example.ranksprint.common.Utils
@@ -81,8 +85,10 @@ fun HomeScreen(
     val categories by viewModel.categories.collectAsState()
     val banners by viewModel.banners.collectAsState()
     val popularMockTests by viewModel.popularMockTests.collectAsState()
+    val leaderBoardList by viewModel.LeaderBoard.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
+
 
     val sharedUserInfo by sharedViewModel.userInfo.collectAsState()
 
@@ -97,6 +103,9 @@ fun HomeScreen(
         if (Utils.access_token.isEmpty()) {
             Utils.access_token = Utils.getData(context, "access_token", "") as String
         }
+        val userId =
+            Utils.getData(context, "user_id", "") as String
+        viewModel.fetchData(userId)
     }
 
     LaunchedEffect(sharedUserInfo) {
@@ -114,28 +123,36 @@ fun HomeScreen(
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) }
     ) { innerPadding ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                HeaderSection(onViewNotification,userName.value, userPhone.value, userProfileImage.value)
+                HeaderSection(
+                    onViewNotification,
+                    userName.value,
+                    userPhone.value,
+                    userProfileImage.value
+                )
                 BannerSection(banners)
 
-                if (error != null) {
-                    Text(
-                        text = error!!,
-                        color = Color.Red,
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
+//                if (error != null) {
+//                    Text(
+//                        text = error!!,
+//                        color = Color.Red,
+//                        modifier = Modifier.padding(16.dp),
+//                        style = MaterialTheme.typography.bodyMedium
+//                    )
+//                }
 
                 CategoriesSection(categories, onNavigateToCategory, onViewAllCategories)
                 RecentTestSection(popularMockTests, onNavigateToTestInstructions)
+                LeaderBoardSection(leaderBoardList)
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -150,7 +167,12 @@ fun HomeScreen(
 }
 
 @Composable
-fun HeaderSection(onViewNotification: () -> Unit, userName: String, userPhone: String, userProfileImage: String) {
+fun HeaderSection(
+    onViewNotification: () -> Unit,
+    userName: String,
+    userPhone: String,
+    userProfileImage: String
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -543,5 +565,169 @@ fun HomeScreenPreview() {
             onViewNotification = {},
             viewModel = HomeViewModel() // Ideally use a mock or pre-filled VM for preview
         )
+    }
+}
+
+
+@Composable
+fun LeaderBoardSection(
+    list: List<LeaderBoardItem>
+) {
+
+    if (list.isEmpty()) return
+
+    Column(
+        modifier = Modifier.padding(horizontal = 16.dp)
+    ) {
+
+        Text(
+            text = "Leader Board",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        list.forEach {
+            LeaderBoardCard(it)
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
+
+@Composable
+fun LeaderBoardCard(
+    item: LeaderBoardItem
+) {
+
+    val bgColor = when (item.rank) {
+
+        1 -> Color(0xFFFFF8E1)
+        2 -> Color(0xFFFFFFFF)
+        3 -> Color(0xFFFFFFFF)
+
+        else -> Color.White
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = bgColor
+        ),
+        elevation = CardDefaults.cardElevation(2.dp)
+    ) {
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            RankView(item.rank ?: 0)
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            AsyncImage(
+                model = item.profileImage,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(45.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop,
+                error = painterResource(R.drawable.ic_profile),
+                placeholder = painterResource(R.drawable.ic_profile)
+            )
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+
+                Text(
+                    text = item.name ?: "User",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                )
+
+                Text(
+                    text = "Score: ${item.score}",
+                    color = Color.Gray,
+                    fontSize = 12.sp
+                )
+            }
+
+            TrophyView(item.rank ?: 0)
+        }
+    }
+}
+
+@Composable
+fun RankView(rank: Int) {
+
+    when (rank) {
+
+        1 -> Text(
+            text = "\uD83E\uDD47",
+            fontSize = 35.sp
+        )
+
+        2 -> Text(
+            text = "\uD83E\uDD48",
+            fontSize = 35.sp
+        )
+
+        3 -> Text(
+            text = "\uD83E\uDD49",
+            fontSize = 35.sp
+        )
+
+        else -> {
+            Box(
+                modifier = Modifier.width(40.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = rank.toString(),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun TrophyView(rank: Int) {
+
+    when (rank) {
+
+        1, 2, 3 -> {
+
+            val color = when (rank) {
+                1 -> Color(0xFFFFC107) // Gold
+                2 -> Color(0xFFBDBDBD) // Silver
+                else -> Color(0xFFCD7F32) // Bronze
+            }
+
+            Icon(
+                imageVector = Icons.Default.EmojiEvents,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(42.dp)
+            )
+        }
+
+        else -> {
+
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = Color.Gray,
+                modifier = Modifier.size(28.dp)
+            )
+        }
     }
 }

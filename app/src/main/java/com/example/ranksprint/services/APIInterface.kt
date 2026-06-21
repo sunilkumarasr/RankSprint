@@ -1,10 +1,9 @@
 package com.example.ranksprint.services
 
-
-
 import com.example.quiztech.model.BannerResponse
 import com.example.quiztech.model.CategoryResponse
 import com.example.quiztech.model.ContactUsMain
+import com.example.quiztech.model.CreateTicketResponse
 import com.example.quiztech.model.EnrollResponse
 import com.example.quiztech.model.FAQsMainResponse
 import com.example.quiztech.model.LoginResponse
@@ -12,7 +11,9 @@ import com.example.quiztech.model.MainResponse
 import com.example.quiztech.model.MockListMainRes
 import com.example.quiztech.model.ExamQuestionsResponse
 import com.example.quiztech.model.HomeSubCategoryResponse
+import com.example.quiztech.model.LeaderBoardResponse
 import com.example.quiztech.model.MyExamsResponse
+import com.example.quiztech.model.MyTestResultResponse
 import com.example.quiztech.model.NotificationResponse
 import com.example.quiztech.model.OTPVerifyResponse
 import com.example.quiztech.model.SubmitExamRequest
@@ -24,6 +25,8 @@ import com.example.quiztech.model.SubCategoryMainRes
 import com.example.quiztech.model.SubscriptionDetailRes
 import com.example.quiztech.model.SubscriptionMainRes
 import com.example.quiztech.model.TestDetailsResponse
+import com.example.quiztech.model.TicketDetailsResponse
+import com.example.quiztech.model.TicketsResponse
 import com.example.quiztech.model.TopicMainRes
 import com.example.quiztech.services.ServiceManager.Companion.ROOT_URL_SUB
 import okhttp3.MultipartBody
@@ -50,7 +53,8 @@ interface APIInterface {
         @Field("password") password: String,
         @Field("city") city: String,
         @Field("pincode") pincode: String,
-        @Field("address") address: String
+        @Field("address") address: String,
+        @Field("device_id") device_id: String
     ): Call<RegistrationMainRes>
 
     @FormUrlEncoded
@@ -284,8 +288,6 @@ interface APIInterface {
                     @Field("email") email: String
     ): Call<FAQsMainResponse>
 
-
-
     @FormUrlEncoded
     @POST(ROOT_URL_SUB + "pages_list")
     fun getPageList(
@@ -317,4 +319,51 @@ interface APIInterface {
         @Header("Authorization") authHeader: String,
         @Field("user_id") userId: String
     ): Call<NotificationResponse>
+
+    @FormUrlEncoded
+    @POST(ROOT_URL_SUB + "get_tickets")
+    fun getTickets(
+        @Header("Authorization") authHeader: String,
+        @Field("user_id") userId: String
+    ): Call<TicketsResponse>
+
+    @FormUrlEncoded
+    @POST(ROOT_URL_SUB + "ticket_details")
+    fun getTicketDetails(
+        @Header("Authorization") authHeader: String,
+        @Field("ticket_id") ticketId: String
+    ): Call<TicketDetailsResponse>
+
+    @FormUrlEncoded
+    @POST(ROOT_URL_SUB + "my_test_results")
+    fun getMyTestResults(
+        @Header("Authorization") authHeader: String,
+        @Field("user_id") userId: String
+    ): Call<MyTestResultResponse>
+
+    @FormUrlEncoded
+    @POST(ROOT_URL_SUB + "get_leaderboard")
+    fun getLeaderBoard(
+        @Header("Authorization") authHeader: String,
+        @Field("user_id") userId: String
+    ): Call<LeaderBoardResponse>
+
+    @FormUrlEncoded
+    @POST(ROOT_URL_SUB + "get_leaderboard")
+    fun getWinningData(
+        @Header("Authorization") authHeader: String,
+        @Field("user_id") userId: String,
+        @Field("product_id") productId: String
+    ): Call<LeaderBoardResponse>
+
+
+    @FormUrlEncoded
+    @POST(ROOT_URL_SUB + "create_ticket")
+    fun createTicket(
+        @Header("Authorization") authHeader: String,
+        @Field("user_id") userId: String,
+        @Field("subject") subject: String,
+        @Field("message") message: String
+    ): Call<CreateTicketResponse>
+
 }

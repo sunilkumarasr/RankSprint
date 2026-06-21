@@ -41,7 +41,7 @@ fun NotificationScreen(
 
         val userId = Utils.getData(context, "user_id", "") as String
 
-        Log.e("Notification", "userId = $userId")
+        Log.e("Notification_", "userId = $userId")
 
         if (userId.isNotEmpty()) {
 
@@ -105,18 +105,11 @@ fun NotificationScreen(
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text("Notifications")
-                },
+            TopAppBar(
+                title = { Text("Notifications", style = MaterialTheme.typography.titleMedium) },
                 navigationIcon = {
-                    IconButton(
-                        onClick = onNavigateBack
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -206,7 +199,7 @@ fun NotificationCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
+            defaultElevation = 2.dp
         )
     ) {
 
@@ -238,4 +231,5 @@ fun NotificationCard(
             )
         }
     }
+
 }

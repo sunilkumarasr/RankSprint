@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.ranksprint.common.Utils
 import com.example.ranksprint.ui.screens.AboutUsScreen
+import com.example.ranksprint.ui.screens.AddTicketScreen
 import com.example.ranksprint.ui.screens.AllCategoriesScreen
 import com.example.ranksprint.ui.screens.CategoryScreen
 import com.example.ranksprint.ui.screens.ContactUsScreen
@@ -25,6 +26,7 @@ import com.example.ranksprint.ui.screens.HomeScreen
 import com.example.ranksprint.ui.screens.HomeSubCategoryItems
 import com.example.ranksprint.ui.screens.HomeSubCategoryScreen
 import com.example.ranksprint.ui.screens.MockTestEngineScreen
+import com.example.ranksprint.ui.screens.MyRanksScreen
 import com.example.ranksprint.ui.screens.MyTestsScreen
 import com.example.ranksprint.ui.screens.NotLoggedInScreen
 import com.example.ranksprint.ui.screens.NotificationScreen
@@ -45,6 +47,8 @@ import com.example.ranksprint.ui.screens.SubscriptionPlansScreen
 import com.example.ranksprint.ui.screens.SubscriptionScreen
 import com.example.ranksprint.ui.screens.TermsConditionsScreen
 import com.example.ranksprint.ui.screens.TestInstructionsScreen
+import com.example.ranksprint.ui.screens.TicketDetailsScreen
+import com.example.ranksprint.ui.screens.TicketListScreen
 import com.example.ranksprint.ui.viewmodels.SharedViewModel
 
 @Composable
@@ -251,6 +255,8 @@ fun RankSprintNavGraph(navController: NavHostController) {
                 navController = navController,
                 sharedViewModel = sharedViewModel,
                 onNavigateToEditProfile = { navController.navigate("personal_info") },
+                onNavigateToMyRanksScreen = { navController.navigate(Screen.MyRanksScreen.route) },
+                onNavigateToMyTicketListScreen = { navController.navigate(Screen.TicketListScreen.route) },
                 onNavigateToAboutUs = { navController.navigate(Screen.AboutUs.route) },
                 onNavigateToTerms = { navController.navigate(Screen.Terms.route) },
                 onNavigateToPrivacy = { navController.navigate(Screen.Privacy.route) },
@@ -317,6 +323,40 @@ fun RankSprintNavGraph(navController: NavHostController) {
                     }
                 }
             )
+        }
+
+        composable(Screen.TicketListScreen.route) {
+            TicketListScreen(
+                navController = navController,
+                onViewAddTicketScreen = {
+                    navController.navigate("add_ticket_screen")
+                },
+                onViewTicketDetailsScreen = { ticketId ->
+                    navController.navigate(
+                        Screen.TicketDetailsScreen.createRoute(ticketId)
+                    )
+                },
+                onNavigateBack = { navController.popBackStack() })
+        }
+
+        composable(Screen.TicketDetailsScreen.route) { backStackEntry ->
+            val ticketId = backStackEntry.arguments?.getString("ticketId") ?: ""
+            TicketDetailsScreen(
+                ticketId=  ticketId,
+                navController = navController,
+                onNavigateBack = { navController.popBackStack() })
+        }
+
+        composable(Screen.AddTicketScreen.route) {
+            AddTicketScreen(
+                navController = navController,
+                onNavigateBack = { navController.popBackStack() })
+        }
+
+        composable(Screen.MyRanksScreen.route) {
+            MyRanksScreen(
+                navController = navController,
+                onNavigateBack = { navController.popBackStack() })
         }
 
         composable(Screen.AboutUs.route) {

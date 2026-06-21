@@ -1,5 +1,6 @@
 package com.example.ranksprint.ui.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -22,6 +23,7 @@ import com.example.ranksprint.R
 import com.example.quiztech.model.LoginResponse
 import com.example.quiztech.model.RegistrationMainRes
 import com.example.quiztech.services.ServiceManager
+import com.google.firebase.messaging.FirebaseMessaging
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,12 +38,22 @@ fun SignUpScreen(
     var city by remember { mutableStateOf("") }
     var pinCode by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
-    
+    var device_id by remember { mutableStateOf("") }
+
+
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
 
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(Unit) {
+        FirebaseMessaging.getInstance().token
+            .addOnSuccessListener { token ->
+                device_id = token
+                Log.e("FCM_TOKEN", device_id)
+            }
+    }
 
     Column(
         modifier = Modifier
@@ -135,7 +147,7 @@ fun SignUpScreen(
                         isLoading = false
                         errorMessage = t.message ?: "Network error"
                     }
-                }, fullName, email, phoneNumber, "123456", city, pinCode, address)
+                }, fullName, email, phoneNumber, "123456", city, pinCode, address, device_id)
             },
             modifier = Modifier
                 .fillMaxWidth()

@@ -4,12 +4,14 @@ package com.example.quiztech.services
 import com.example.quiztech.model.BannerResponse
 import com.example.quiztech.model.CategoryResponse
 import com.example.quiztech.model.ContactUsMain
+import com.example.quiztech.model.CreateTicketResponse
 import com.example.quiztech.model.EnrollResponse
 import com.example.quiztech.model.ExamQuestionsResponse
 import com.example.quiztech.model.SubmitExamRequest
 import com.example.quiztech.model.SubmitExamResponse
 import com.example.quiztech.model.FAQsMainResponse
 import com.example.quiztech.model.HomeSubCategoryResponse
+import com.example.quiztech.model.LeaderBoardResponse
 import com.example.quiztech.model.LoginResponse
 import com.example.quiztech.model.MainResponse
 import com.example.quiztech.model.MockListMainRes
@@ -17,22 +19,22 @@ import com.example.quiztech.model.OTPVerifyResponse
 import com.example.quiztech.model.PageResponse
 import com.example.quiztech.model.ResendOTPResponse
 import com.example.quiztech.model.MyExamsResponse
+import com.example.quiztech.model.MyTestResultResponse
 import com.example.quiztech.model.NotificationResponse
 import com.example.quiztech.model.RegistrationMainRes
 import com.example.quiztech.model.SubCategoryMainRes
 import com.example.quiztech.model.SubscriptionDetailRes
 import com.example.quiztech.model.SubscriptionMainRes
 import com.example.quiztech.model.TestDetailsResponse
+import com.example.quiztech.model.TicketDetailsResponse
+import com.example.quiztech.model.TicketsResponse
 import com.example.quiztech.model.TopicMainRes
-
 import com.google.gson.GsonBuilder
 import com.example.ranksprint.common.Utils
-
 import com.example.ranksprint.services.APIInterface
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.logging.HttpLoggingInterceptor
@@ -97,9 +99,9 @@ class ServiceManager {
         call.enqueue(cb)
     }
 
-    fun registerUser(cb: Callback<RegistrationMainRes>, fullName: String, email: String, phone: String, password: String, city: String, pincode: String, address: String) {
+    fun registerUser(cb: Callback<RegistrationMainRes>, fullName: String, email: String, phone: String, password: String, city: String, pincode: String, address: String, device_id: String) {
         val apiService = retrofit.create(APIInterface::class.java)
-        val call = apiService.registerUser(fullName, email, phone, password, city, pincode, address)
+        val call = apiService.registerUser(fullName, email, phone, password, city, pincode, address, device_id)
         call.enqueue(cb)
     }
     fun updateProfile(cb: Callback<OTPVerifyResponse>,user_id:String,fullname:String, address:String, phone:String, gender:String, city:String, pincode:String){
@@ -310,6 +312,48 @@ class ServiceManager {
         val token = Utils.access_token
         val apiService = retrofit.create(APIInterface::class.java)
         val call = apiService.getNotifications("Bearer $token", userId)
+        call.enqueue(cb)
+    }
+
+    fun getTickets(cb: Callback<TicketsResponse>, userId: String) {
+        val token = Utils.access_token
+        val apiService = retrofit.create(APIInterface::class.java)
+        val call = apiService.getTickets("Bearer $token", userId)
+        call.enqueue(cb)
+    }
+
+    fun getTicketDetails(cb: Callback<TicketDetailsResponse>, ticketId: String) {
+        val token = Utils.access_token
+        val apiService = retrofit.create(APIInterface::class.java)
+        val call = apiService.getTicketDetails("Bearer $token", ticketId)
+        call.enqueue(cb)
+    }
+
+    fun getMyTestResults(cb: Callback<MyTestResultResponse>, userId: String) {
+        val token = Utils.access_token
+        val apiService = retrofit.create(APIInterface::class.java)
+        val call = apiService.getMyTestResults("Bearer $token", userId)
+        call.enqueue(cb)
+    }
+
+    fun getLeaderBoard(cb: Callback<LeaderBoardResponse>, userId: String) {
+        val token = Utils.access_token
+        val apiService = retrofit.create(APIInterface::class.java)
+        val call = apiService.getLeaderBoard("Bearer $token", userId)
+        call.enqueue(cb)
+    }
+
+    fun getWinningData(cb: Callback<LeaderBoardResponse>, userId: String, productId: String) {
+        val token = Utils.access_token
+        val apiService = retrofit.create(APIInterface::class.java)
+        val call = apiService.getWinningData("Bearer $token", userId, productId)
+        call.enqueue(cb)
+    }
+
+    fun createTicket(cb: Callback<CreateTicketResponse>, userId: String, subject: String, message: String) {
+        val token = Utils.access_token
+        val apiService = retrofit.create(APIInterface::class.java)
+        val call = apiService.createTicket("Bearer $token", userId, subject, message)
         call.enqueue(cb)
     }
 
